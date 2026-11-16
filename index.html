@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nova Revival</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--ink:#14213d;--mute:#5c6a85;--line:#dde3ef;--mint:#0f9d77;--rose:#d6336c;--blue:#2f6fed;--amber:#c98a00;--vio:#7c4dff;--red:#d92d20;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1220;--card:#131c30;--ink:#eaf0ff;--mute:#93a1bf;--line:#243150;--mint:#3ddcb0;--rose:#ff6b9d;--blue:#6b9bff;--amber:#ffc83d;--vio:#a88bff;--red:#ff6b5e;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0b1220;--card:#131c30;--ink:#eaf0ff;--mute:#93a1bf;--line:#243150;--mint:#3ddcb0;--rose:#ff6b9d;--blue:#6b9bff;--amber:#ffc83d;--vio:#a88bff;--red:#ff6b5e;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.45 Outfit,system-ui,"Noto Sans Devanagari",sans-serif;padding:16px 16px 40px;max-width:640px;margin-inline:auto}
+.hidden{display:none!important}
+h1,h2,h3{margin:0;font-weight:600}h3{font-size:1rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:18px;margin-bottom:14px}
+button{font:inherit;font-weight:600;border:0;border-radius:14px;padding:11px 18px;background:var(--mint);color:#06281f;cursor:pointer}
+button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+input,select{font:inherit;width:100%;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+label{display:block;font-size:.8rem;color:var(--mute);margin:10px 0 4px}
+.top{display:flex;justify-content:space-between;align-items:center;margin:4px 0 16px}
+.top h2{font-size:1.4rem}.top small{color:var(--mute)}
+.ibtn{width:42px;height:42px;padding:0;border-radius:50%;background:var(--card);color:var(--ink);border:1px solid var(--line);margin-left:8px}
+.login{padding-top:12vh;text-align:center}.login h1{font-size:2.6rem;letter-spacing:-.02em}.login p{color:var(--mute)}
+.login .card{text-align:left;margin-top:24px}
+/* cycle hero */
+.cycle{display:grid;grid-template-columns:190px 1fr;gap:16px;align-items:center}
+@media(max-width:430px){.cycle{grid-template-columns:1fr;justify-items:center;text-align:center}}
+.ring{position:relative;width:190px;height:190px}.ring svg{width:100%;height:100%}
+.ring .mid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring .mid b{font-size:2.4rem;line-height:1}.ring .mid span{font-size:.8rem;color:var(--mute)}
+.phase{font-size:1.25rem;font-weight:600}
+.pill{display:inline-block;padding:3px 10px;border-radius:99px;font-size:.78rem;border:1px solid var(--line);color:var(--mute);margin:3px 4px 0 0}
+.legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.75rem;color:var(--mute);margin-top:10px}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
+details summary{cursor:pointer;color:var(--blue);font-weight:500;margin-top:12px}
+.note{font-size:.75rem;color:var(--mute);margin-top:10px}
+/* vitals */
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:14px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px}
+.tile b{font-size:1.6rem;display:block}.tile span{color:var(--mute);font-size:.82rem}
+.score{display:flex;align-items:center;gap:16px}
+.sring{width:92px;height:92px;border-radius:50%;background:conic-gradient(var(--mint) calc(var(--p)*1%),var(--line) 0);display:grid;place-items:center}
+.sring div{width:72px;height:72px;border-radius:50%;background:var(--card);display:grid;place-items:center;font-size:1.5rem;font-weight:700}
+.chart{height:130px;position:relative}
+#status{font-weight:600}
+.task{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.task:last-child{border:0}.task.done span{text-decoration:line-through;color:var(--mute)}
+.task button{padding:6px 12px;font-size:.8rem}
+#chat{height:190px;overflow:auto;background:var(--bg);border-radius:14px;padding:12px;margin-bottom:10px;font-size:.92rem}
+#chat p{margin:0 0 8px}.me{color:var(--blue)}
+.send{display:flex;gap:8px}
+#toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 12px);transform:translate(-50%,-120px);padding:12px 20px;border-radius:14px;color:#0b1220;font-weight:600;transition:transform .4s;z-index:50;max-width:90%}
+#toast.show{transform:translate(-50%,0)}
+.sheet{position:fixed;inset:0;background:rgba(5,10,20,.55);z-index:40;display:flex;align-items:flex-end}
+.sheet>div{background:var(--card);width:100%;max-width:640px;margin:0 auto;border-radius:24px 24px 0 0;padding:20px 20px calc(24px + env(safe-area-inset-bottom,0px))}
+</style>
+</head>
+<body>
+<section id="login" class="login hidden">
+  <h1>Nova Revival</h1><p data-t="tag">Your health and cycle companion</p>
+  <div class="card">
+    <label for="name" data-t="yourName">Your name</label><input id="name" autocomplete="given-name">
+    <label for="gender" data-t="gender">Gender</label>
+    <select id="gender"><option value="female">Female</option><option value="male">Male</option></select>
+    <button style="width:100%;margin-top:16px" id="go" data-t="start">Open dashboard</button>
+  </div>
+</section>
+
+<main id="app" class="hidden">
+  <div class="top">
+    <div><h2 id="hello"></h2><small id="today"></small></div>
+    <div><button class="ibtn" id="bLang" aria-label="Language">हिं</button><button class="ibtn" id="bTheme" aria-label="Theme">◐</button><button class="ibtn" id="bSet" aria-label="Settings">⚙</button></div>
+  </div>
+
+  <section id="cycleCard" class="card hidden">
+    <div id="cycleEmpty"><h3 data-t="cycTitle">Cycle tracker</h3><p style="color:var(--mute)" data-t="cycEmpty">Add the first day of your last period to see your phase, next period and fertile window.</p></div>
+    <div id="cycleView" class="cycle hidden">
+      <div class="ring"><svg viewBox="0 0 200 200" id="ringSvg"></svg><div class="mid"><span data-t="day">Day</span><b id="cDay">–</b><span id="cOf"></span></div></div>
+      <div><div class="phase" id="cPhase"></div><div id="cInfo" style="color:var(--mute);margin:4px 0 8px"></div><div id="cPills"></div>
+        <div class="legend" id="legend"></div></div>
+    </div>
+    <details id="cycForm"><summary data-t="cycEdit">Set up or edit cycle</summary>
+      <label for="pDate" data-t="lastPeriod">First day of last period</label><input type="date" id="pDate">
+      <div style="display:flex;gap:10px"><div style="flex:1"><label for="cLen" data-t="cycLen">Cycle length (days)</label><input type="number" id="cLen" min="21" max="45" value="28" inputmode="numeric"></div>
+      <div style="flex:1"><label for="pLen" data-t="perLen">Period length (days)</label><input type="number" id="pLen" min="2" max="10" value="5" inputmode="numeric"></div></div>
+      <div style="display:flex;gap:10px;margin-top:14px"><button id="saveCyc" data-t="save">Save</button><button class="ghost" id="startToday" data-t="startToday">Period started today</button></div>
+    </details>
+    <p class="note" data-t="disc">Dates are estimates from the numbers you enter. They are not medical advice or contraception.</p>
+  </section>
+
+  <section class="card score">
+    <div class="sring" id="sring" style="--p:78"><div>78</div></div>
+    <div><h3 data-t="wellness">Wellness score</h3><div id="status"></div><div id="stress" style="color:var(--mute)"></div></div>
+  </section>
+
+  <section class="card"><h3 data-t="live">Live heart rate</h3><div class="chart"><canvas id="bpm"></canvas></div></section>
+
+  <div class="grid">
+    <div class="tile"><b id="vBpm">75</b><span data-t="hr">Heart rate</span></div>
+    <div class="tile"><b>98%</b><span data-t="ox">Oxygen (SpO₂)</span></div>
+    <div class="tile"><b>5,200</b><span data-t="st">Steps</span></div>
+    <div class="tile"><b>7.2 h</b><span data-t="sl">Sleep</span></div>
+  </div>
+
+  <button class="ghost" id="bHist" style="margin-bottom:14px" data-t="histShow">View weekly history</button>
+  <section id="hist" class="card hidden"><h3 data-t="histT">Previous week</h3><div class="chart" style="height:200px"><canvas id="week"></canvas></div></section>
+
+  <section id="taskCard" class="card hidden"><h3 data-t="tasks">Daily wellness tasks</h3><div id="taskList"></div><p class="note"><span data-t="xp">Total points:</span> <b id="xp">0</b> XP</p></section>
+
+  <section class="card"><h3 data-t="ai">Nova assistant</h3>
+    <div id="chat" aria-live="polite" style="margin-top:10px"></div>
+    <div class="send"><input id="msg" data-ph="askPh" placeholder="Ask about health or your cycle"><button id="sendB" data-t="send">Send</button></div>
+    <div style="display:flex;gap:8px;align-items:center;margin-top:10px"><button class="ghost" id="scanBtn" data-t="scan">Scan report</button><input type="file" id="scanFile" accept="image/png,image/jpeg,image/webp" class="hidden"></div><p class="note" data-t="scanNote"></p>
+  </section>
+</main>
+
+<div class="sheet hidden" id="sheet"><div>
+  <h3 data-t="settings">Settings</h3>
+  <label style="display:flex;gap:10px;align-items:center;font-size:.95rem;color:var(--ink)"><input type="checkbox" id="taskOn" style="width:auto"> <span data-t="enableTasks">Enable daily tasks</span></label>
+  <h3 style="margin-top:18px" data-t="aiT">AI assistant (optional)</h3>
+  <label for="aiProv" data-t="aiProv">Provider</label>
+  <select id="aiProv"><option value="auto">Auto-detect from key</option><option value="anthropic">Claude (Anthropic)</option><option value="openai">OpenAI</option><option value="gemini">Gemini (Google)</option><option value="openrouter">OpenRouter</option><option value="custom">Other (OpenAI-compatible)</option></select>
+  <label for="aiKey" data-t="aiKey">Your API key</label><input type="password" id="aiKey" placeholder="sk-ant-…" autocomplete="off" autocapitalize="off" spellcheck="false">
+  <label for="aiModel" data-t="aiModel">Model</label><input id="aiModel" placeholder="Leave empty for the default" autocapitalize="off" spellcheck="false">
+  <label for="aiBase" data-t="aiBase">API base URL (only for Other)</label><input id="aiBase" placeholder="https://api.groq.com/openai/v1" autocapitalize="off" spellcheck="false">
+  <div style="display:flex;gap:10px;margin-top:10px"><button id="aiSave" style="flex:1" data-t="aiSave">Save key</button><button class="ghost" id="aiRemove" style="flex:1" data-t="aiRemove">Remove key</button></div>
+  <p class="note" id="aiState"></p><p class="note" data-t="aiNote"></p>
+  <div style="display:flex;gap:10px;margin-top:18px"><button class="ghost" id="closeSet" style="flex:1" data-t="close">Close</button><button id="logout" style="flex:1;background:var(--red);color:#fff" data-t="logout">Log out</button></div>
+</div></div>
+<div id="toast"></div>
+
+<script>
+const mem={};const S={get(k){try{return localStorage.getItem(k)}catch(e){return mem[k]??null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){mem[k]=v}},clr(){try{localStorage.clear()}catch(e){}Object.keys(mem).forEach(k=>delete mem[k])}};
+const $=id=>document.getElementById(id);
+const T={en:{tag:"Your health and cycle companion",aiProv:"Provider",aiBase:"API base URL (only for Other)",scan:"Scan report",scanNoKey:"Add an API key in Settings first.",scanDef:"Please explain this report in simple words.",imgErr:"Could not read that image.",scanNote:"Report photos contain personal details. Crop out your name and ID before scanning. The image goes to the AI provider you chose.",aiT:"AI assistant (optional)",aiKey:"Your API key",aiModel:"Model",aiSave:"Save key",aiRemove:"Remove key",aiNote:"Your key stays on this device and is sent only to the provider you pick. Only your question and your cycle day and phase are shared, never your name or dates. Anyone using this phone can use the key, so remove it on shared devices.",aiOn:"AI on",aiOff:"AI off: using simple keyword replies",aiErr:"AI request failed. Using a simple reply instead.",aiThink:"Thinking…",aiSaved:"Key saved",aiRemoved:"Key removed",yourName:"Your name",gender:"Gender",start:"Open dashboard",hello:"Hello, ",cycTitle:"Cycle tracker",cycEmpty:"Add the first day of your last period to see your phase, next period and fertile window.",day:"Day",cycEdit:"Set up or edit cycle",lastPeriod:"First day of last period",cycLen:"Cycle length (days)",perLen:"Period length (days)",save:"Save",startToday:"Period started today",disc:"Dates are estimates from the numbers you enter. They are not medical advice or contraception.",wellness:"Wellness score",live:"Live heart rate",hr:"Heart rate",ox:"Oxygen (SpO₂)",st:"Steps",sl:"Sleep",histShow:"View weekly history",histHide:"Hide weekly history",histT:"Previous week",tasks:"Daily wellness tasks",xp:"Total points:",ai:"Nova assistant",send:"Send",askPh:"Ask about health or your cycle",settings:"Settings",enableTasks:"Enable daily tasks",close:"Close",logout:"Log out",p:["Period","Follicular","Ovulation","Luteal"],stable:"Vitals are stable.",elev:"Heart rate is elevated.",crit:"High stress detected.",sLow:"Stress: low",sMod:"Stress: moderate",sHigh:"Stress: high",ofd:"of ",nextIn:d=>`Next period in ${d} day${d==1?"":"s"}`,dueToday:"Next period is due today",late:d=>`Period is ${d} day${d==1?"":"s"} later than your cycle length`,fertile:"Fertile window",inFertile:"In fertile window",ovIn:d=>`Ovulation in about ${d} days`,ovToday:"Ovulation expected today",future:"That date is in the future. Pick today or earlier.",saved:"Cycle saved",full:"Please enter your name.",earned:p=>`Earned ${p} XP`,done:"Done",unk:"I didn’t quite catch that. Try asking about sleep, food, water or your next phase.",noCyc:"Add your last period date in the cycle card first.",nextPh:(d,p,n,l)=>`You are on day ${d} (${p}). ${n} starts in ${l} day${l==1?"":"s"}.`,iron:"Eat iron-rich foods like spinach, dal and jaggery.",lite:"Choose fresh salads and light meals.",greens:"Focus on leafy greens and protein.",steps:"You have covered 5,200 steps. Keep moving!"},
+hi:{tag:"आपका स्वास्थ्य और चक्र साथी",aiProv:"प्रदाता",aiBase:"API बेस URL (केवल Other के लिए)",scan:"रिपोर्ट स्कैन करें",scanNoKey:"पहले सेटिंग्स में API कुंजी जोड़ें।",scanDef:"कृपया इस रिपोर्ट को आसान शब्दों में समझाएं।",imgErr:"वह फोटो नहीं पढ़ी जा सकी।",scanNote:"रिपोर्ट की फोटो में निजी जानकारी होती है। स्कैन से पहले नाम और ID काट दें। फोटो आपके चुने AI प्रदाता को जाती है।",aiT:"AI सहायक (वैकल्पिक)",aiKey:"आपकी API कुंजी",aiModel:"मॉडल",aiSave:"कुंजी सेव करें",aiRemove:"कुंजी हटाएं",aiNote:"आपकी कुंजी इसी डिवाइस पर रहती है और सिर्फ आपके चुने प्रदाता को भेजी जाती है। केवल आपका सवाल और चक्र का दिन व चरण साझा होता है, नाम या तारीखें नहीं। इस फोन का कोई भी व्यक्ति कुंजी इस्तेमाल कर सकता है, इसलिए साझा डिवाइस पर इसे हटा दें।",aiOn:"AI चालू",aiOff:"AI बंद: साधारण कीवर्ड जवाब",aiErr:"AI अनुरोध विफल रहा। साधारण जवाब दिया जा रहा है।",aiThink:"सोच रही हूँ…",aiSaved:"कुंजी सेव हुई",aiRemoved:"कुंजी हटाई गई",yourName:"आपका नाम",gender:"लिंग",start:"डैशबोर्ड खोलें",hello:"नमस्ते, ",cycTitle:"चक्र ट्रैकर",cycEmpty:"अपने पिछले पीरियड का पहला दिन जोड़ें, ताकि चरण, अगला पीरियड और फर्टाइल विंडो दिखे।",day:"दिन",cycEdit:"चक्र सेट या बदलें",lastPeriod:"पिछले पीरियड का पहला दिन",cycLen:"चक्र की लंबाई (दिन)",perLen:"पीरियड की अवधि (दिन)",save:"सेव करें",startToday:"आज पीरियड शुरू हुआ",disc:"तारीखें आपके दिए आँकड़ों पर आधारित अनुमान हैं। यह चिकित्सा सलाह या गर्भनिरोधक नहीं है।",wellness:"वेलनेस स्कोर",live:"लाइव हृदय गति",hr:"हृदय गति",ox:"ऑक्सीजन (SpO₂)",st:"कदम",sl:"नींद",histShow:"साप्ताहिक इतिहास देखें",histHide:"इतिहास छुपाएं",histT:"पिछला सप्ताह",tasks:"दैनिक स्वास्थ्य कार्य",xp:"कुल अंक:",ai:"नोवा सहायक",send:"भेजें",askPh:"स्वास्थ्य या चक्र के बारे में पूछें",settings:"सेटिंग्स",enableTasks:"दैनिक कार्य चालू करें",close:"बंद करें",logout:"लॉग आउट",p:["मासिक धर्म","कूपिक","ओव्यूलेशन","ल्यूटियल"],stable:"स्वास्थ्य सामान्य है।",elev:"हृदय गति बढ़ी हुई है।",crit:"उच्च तनाव का पता चला।",sLow:"तनाव: कम",sMod:"तनाव: मध्यम",sHigh:"तनाव: उच्च",ofd:"/ ",nextIn:d=>`अगला पीरियड ${d} दिन में`,dueToday:"अगला पीरियड आज अपेक्षित है",late:d=>`पीरियड चक्र से ${d} दिन देर से है`,fertile:"फर्टाइल विंडो",inFertile:"फर्टाइल विंडो में",ovIn:d=>`ओव्यूलेशन लगभग ${d} दिन में`,ovToday:"ओव्यूलेशन आज अपेक्षित है",future:"यह तारीख भविष्य की है। आज या उससे पहले की चुनें।",saved:"चक्र सेव हुआ",full:"कृपया अपना नाम लिखें।",earned:p=>`${p} XP मिले`,done:"पूरा",unk:"मैं समझ नहीं पाई। नींद, खाना, पानी या अगले चरण के बारे में पूछें।",noCyc:"पहले चक्र कार्ड में पिछले पीरियड की तारीख डालें।",nextPh:(d,p,n,l)=>`आप दिन ${d} (${p}) पर हैं। ${n} ${l} दिन में शुरू होगा।`,iron:"पालक, दाल और गुड़ जैसे आयरन वाले भोजन खाएं।",lite:"ताज़ा सलाद और हल्का भोजन लें।",greens:"हरी सब्जियां और प्रोटीन लें।",steps:"आपने 5,200 कदम पूरे किए हैं। चलते रहें!"}};
+const TASKS=[{id:1,en:"Drink 500 ml of water",hi:"500 मिली पानी पिएं",p:10},{id:2,en:"Take a 10-minute walk",hi:"10 मिनट की सैर करें",p:20},{id:3,en:"Practice deep breathing",hi:"गहरी सांस लेने का अभ्यास करें",p:15},{id:4,en:"Log your mood in chat",hi:"चैट में अपना मूड लिखें",p:5}];
+let L=S.get("nova.lang")||"en",xp=parseInt(S.get("nova.xp"))||0,bpmChart,weekChart;
+const t=k=>T[L][k];
+const PH=["var(--rose)","var(--blue)","var(--amber)","var(--vio)"];
+
+function toast(m,c){const e=$("toast");e.textContent=m;e.style.background=c||"var(--mint)";e.classList.add("show");clearTimeout(toast.h);toast.h=setTimeout(()=>e.classList.remove("show"),2600)}
+function applyLang(){document.documentElement.lang=L;document.querySelectorAll("[data-t]").forEach(e=>{const v=T[L][e.dataset.t];if(typeof v==="string")e.textContent=v});
+ document.querySelectorAll("[data-ph]").forEach(e=>e.placeholder=T[L][e.dataset.ph]);$("bLang").textContent=L==="en"?"हिं":"En";
+ $("hello").textContent=t("hello")+(S.get("nova.user")||"");$("today").textContent=new Date().toLocaleDateString(L==="hi"?"hi-IN":"en-IN",{weekday:"long",day:"numeric",month:"long"});
+ $("bHist").textContent=t($("hist").classList.contains("hidden")?"histShow":"histHide");renderTasks();renderCycle()}
+
+/* ---- cycle ---- */
+const midnight=d=>new Date(d.getFullYear(),d.getMonth(),d.getDate());
+function parseISO(s){const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s||"");return m?new Date(+m[1],+m[2]-1,+m[3]):null}
+const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+function cycleData(){const s=parseISO(S.get("nova.pDate"));if(!s)return null;
+ const cl=Math.min(45,Math.max(21,parseInt(S.get("nova.cLen"))||28)),pl=Math.min(10,Math.max(2,parseInt(S.get("nova.pLen"))||5));
+ const since=Math.round((midnight(new Date())-s)/864e5);if(since<0)return null;
+ const day=since%cl+1,ov=cl-14,fs=ov-5;                      // ovulation about 14 days before next period
+ const nextIn=cl-since%cl,overdue=since>=cl&&false;
+ const phase=day<=pl?0:day<ov-1?1:day<=ov+1?2:3;
+ return{cl,pl,day,ov,fs,phase,nextIn,cycles:Math.floor(since/cl)}}
+function renderCycle(){const d=cycleData(),has=!!d;$("cycleEmpty").classList.toggle("hidden",has);$("cycleView").classList.toggle("hidden",!has);
+ $("pDate").value=S.get("nova.pDate")||"";$("cLen").value=S.get("nova.cLen")||28;$("pLen").value=S.get("nova.pLen")||5;$("pDate").max=iso(new Date());
+ if(!has)return;
+ $("cDay").textContent=d.day;$("cOf").textContent=t("ofd")+d.cl;
+ $("cPhase").textContent=t("p")[d.phase];$("cPhase").style.color=PH[d.phase];
+ $("cInfo").textContent=d.nextIn===d.cl?t("dueToday"):t("nextIn")(d.nextIn);
+ if(d.nextIn===d.cl)$("cInfo").textContent=t("nextIn")(d.cl);
+ const inF=d.day>=d.fs&&d.day<=d.ov+1,toOv=d.ov-d.day;
+ $("cPills").innerHTML="";const add=x=>{const s=document.createElement("span");s.className="pill";s.textContent=x;$("cPills").appendChild(s)};
+ add(inF?t("inFertile"):t("fertile")+": "+t("day")+" "+d.fs+"–"+(d.ov+1));
+ add(toOv>0?t("ovIn")(toOv):toOv===0?t("ovToday"):t("p")[3]);
+ // ring
+ const R=80,C=2*Math.PI*R,segs=[[0,d.pl],[d.pl,d.ov-2],[d.ov-2,d.ov+1],[d.ov+1,d.cl]];let h='<circle cx="100" cy="100" r="80" fill="none" stroke="var(--line)" stroke-width="16"/>';
+ segs.forEach((s,i)=>{const len=Math.max(0,s[1]-s[0])/d.cl*C,off=s[0]/d.cl*C;h+=`<circle cx="100" cy="100" r="80" fill="none" stroke="${PH[i]}" stroke-width="${i===d.phase?18:12}" stroke-dasharray="${Math.max(0,len-2)} ${C}" stroke-dashoffset="${-off}" transform="rotate(-90 100 100)"/>`});
+ const a=(d.day-.5)/d.cl*2*Math.PI-Math.PI/2;h+=`<circle cx="${100+R*Math.cos(a)}" cy="${100+R*Math.sin(a)}" r="9" fill="var(--card)" stroke="var(--ink)" stroke-width="3"/>`;
+ $("ringSvg").innerHTML=h;
+ $("legend").innerHTML=t("p").map((n,i)=>`<span><i style="background:${PH[i]}"></i>${n}</span>`).join("")}
+function saveCycle(date){const c=parseInt($("cLen").value),p=parseInt($("pLen").value);
+ if(!date)date=$("pDate").value;const dt=parseISO(date);if(!dt)return toast(t("lastPeriod"),"var(--amber)");
+ if(dt>midnight(new Date()))return toast(t("future"),"var(--amber)");
+ S.set("nova.pDate",date);S.set("nova.cLen",Math.min(45,Math.max(21,c||28)));S.set("nova.pLen",Math.min(10,Math.max(2,p||5)));
+ renderCycle();$("cycForm").open=false;toast(t("saved"))}
+function nextPhaseMsg(){const d=cycleData();if(!d)return t("noCyc");
+ const ends=[d.pl,d.ov-2,d.ov+1,d.cl],names=t("p");return t("nextPh")(d.day,names[d.phase],names[(d.phase+1)%4],ends[d.phase]-d.day+1)}
+
+/* ---- tasks ---- */
+function renderTasks(){const dk=iso(new Date()),done=JSON.parse(S.get("nova.tasks."+dk)||"[]");$("xp").textContent=xp;const l=$("taskList");l.innerHTML="";
+ TASKS.forEach(k=>{const r=document.createElement("div"),ok=done.includes(k.id);r.className="task"+(ok?" done":"");const s=document.createElement("span");s.textContent=k[L];const b=document.createElement("button");b.textContent=ok?"✓ "+t("done"):"+"+k.p+" XP";b.disabled=ok;if(ok)b.className="ghost";
+  b.onclick=()=>{done.push(k.id);S.set("nova.tasks."+dk,JSON.stringify(done));xp+=k.p;S.set("nova.xp",xp);renderTasks();toast(t("earned")(k.p))};r.append(s,b);l.appendChild(r)})}
+
+/* ---- assistant ---- */
+const KB=[[["next phase","upcoming","what is next","अगला चरण","अगला फेज","नेक्स्ट फेज"],()=>nextPhaseMsg()],
+[["hello","hi ","hey","नमस्ते","हेलो","हाय"],{en:"Hello! How can I help you stay healthy today?",hi:"नमस्ते! मैं आपके स्वास्थ्य में कैसे मदद कर सकती हूँ?"}],
+[["eat","diet","food","breakfast","lunch","dinner","खाना","डाइट","भोजन"],()=>{const d=cycleData();return d&&S.get("nova.gender")==="female"?t(d.phase===0?"iron":d.phase===3?"lite":"greens"):t("greens")}],
+[["step","walk","कदम","चला"],()=>t("steps")],
+[["water","thirst","पानी","प्यास"],{en:"Sip water slowly through the day. Around 2–3 litres suits most adults.",hi:"दिन भर धीरे-धीरे पानी पिएं। ज्यादातर वयस्कों के लिए 2–3 लीटर ठीक है।"}],
+[["sleep","tired","insomnia","नींद","थकान"],{en:"Aim for 7–9 hours. Keep the room dark and cool, and keep screens away before bed.",hi:"7–9 घंटे सोने का लक्ष्य रखें। कमरा अंधेरा और ठंडा रखें, सोने से पहले मोबाइल कम चलाएं।"}],
+[["stress","anxiety","mental","तनाव","चिंता"],{en:"Take a slow deep breath. Five minutes of meditation or a short walk can help.",hi:"गहरी सांस लें। 5 मिनट का ध्यान या टहलना मदद करेगा।"}],
+[["exercise","workout","gym","कसरत","व्यायाम"],{en:"Mix cardio and strength work. Even 20 minutes a day makes a difference.",hi:"कार्डियो और स्ट्रेंथ का मिश्रण अच्छा है। रोज़ 20 मिनट भी काफी हैं।"}],
+[["thank","शुक्रिया","धन्यवाद"],{en:"You’re welcome! I’m here whenever you need a health boost.",hi:"आपका स्वागत है! अपनी सेहत का ध्यान रखें।"}]];
+function say(who,txt,cls){const p=document.createElement("p"),b=document.createElement("b");b.textContent=who+": ";if(cls)b.className=cls;p.append(b,document.createTextNode(txt));$("chat").appendChild(p);$("chat").scrollTop=1e9;return p}
+const H=[];
+const PHN=["menstrual","follicular","ovulation","luteal"];
+const DM={anthropic:"claude-haiku-5-5",openai:"gpt-4o-mini",gemini:"gemini-flash-latest",openrouter:"openai/gpt-4o-mini",custom:""};
+const PL={auto:"auto",anthropic:"Claude",openai:"OpenAI",gemini:"Gemini",openrouter:"OpenRouter",custom:"Other"};
+const SYS="You are Nova, a friendly wellness assistant inside a health app. Give short, practical lifestyle tips. Never diagnose, never give medication doses, and suggest seeing a doctor for severe or persistent symptoms. Reply in the language the user writes in (English or Hindi). Keep answers under 120 words unless explaining a report.";
+const REP=" The user shared a photo of a health or lab report. Read the values, explain in plain language what each one means, point out anything outside the printed reference range, and say clearly that you cannot diagnose and they should discuss it with a doctor. If the image is unreadable, say so.";
+function prov(){const p=S.get("nova.prov")||"auto",k=S.get("nova.key")||"";if(p!=="auto")return p;if(k.startsWith("sk-ant-"))return"anthropic";if(k.startsWith("sk-or-"))return"openrouter";if(k.startsWith("AIza"))return"gemini";return"openai"}
+async function callAI(msgs,img,sys){const key=S.get("nova.key"),p=prov(),model=(S.get("nova.model")||DM[p]||"").trim();if(!model)throw new Error("model name needed");
+ const last=msgs.length-1;let url,headers={"content-type":"application/json"},body;
+ if(p==="anthropic"){url="https://api.anthropic.com/v1/messages";headers["x-api-key"]=key;headers["anthropic-version"]="2023-06-01";headers["anthropic-dangerous-direct-browser-access"]="true";
+  body={model,max_tokens:700,system:sys,messages:msgs.map((m,i)=>({role:m.role,content:img&&i===last?[{type:"image",source:{type:"base64",media_type:img.mime,data:img.b64}},{type:"text",text:m.text}]:m.text}))}}
+ else if(p==="gemini"){url="https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(model)+":generateContent";headers["x-goog-api-key"]=key;
+  body={systemInstruction:{parts:[{text:sys}]},contents:msgs.map((m,i)=>({role:m.role==="assistant"?"model":"user",parts:[{text:m.text}].concat(img&&i===last?[{inlineData:{mimeType:img.mime,data:img.b64}}]:[])})),generationConfig:{maxOutputTokens:700}}}
+ else{const base=p==="openai"?"https://api.openai.com/v1":p==="openrouter"?"https://openrouter.ai/api/v1":(S.get("nova.base")||"").replace(/\/+$/,"");if(!base)throw new Error("base URL needed");
+  url=base+"/chat/completions";headers.authorization="Bearer "+key;
+  body={model,messages:[{role:"system",content:sys}].concat(msgs.map((m,i)=>({role:m.role,content:img&&i===last?[{type:"text",text:m.text},{type:"image_url",image_url:{url:"data:"+img.mime+";base64,"+img.b64}}]:m.text})))};
+  body[p==="openai"?"max_completion_tokens":"max_tokens"]=700}
+ const r=await fetch(url,{method:"POST",headers,body:JSON.stringify(body)});const j=await r.json().catch(()=>({}));
+ if(!r.ok)throw new Error(String(j.error&&(j.error.message||j.error)||r.status));
+ let out=p==="anthropic"?(j.content||[]).filter(c=>c.type==="text").map(c=>c.text).join("\n"):p==="gemini"?(((j.candidates||[])[0]||{}).content&&(j.candidates[0].content.parts||[]).map(c=>c.text||"").join("\n"))||"":(((j.choices||[])[0]||{}).message||{}).content||"";
+ out=String(out).trim();if(!out)throw new Error("empty reply");return out}
+async function askAI(q,img){const d=cycleData(),ctx=d&&S.get("nova.gender")==="female"?" Cycle context: day "+d.day+" of "+d.cl+", "+PHN[d.phase]+" phase.":"";
+ H.push({role:"user",text:q});try{const out=await callAI(H.slice(-7),img,SYS+ctx+(img?REP:""));H.push({role:"assistant",text:out});return out}catch(e){H.pop();throw e}}
+function shrink(f){return new Promise((ok,no)=>{const u=URL.createObjectURL(f),im=new Image();im.onload=()=>{const k=Math.min(1,1600/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);ok({mime:"image/jpeg",b64:c.toDataURL("image/jpeg",.85).split(",")[1]})};im.onerror=()=>{URL.revokeObjectURL(u);no(new Error("img"))};im.src=u})}
+function aiState(){const on=!!S.get("nova.key");$("aiState").textContent=t(on?"aiOn":"aiOff")+(on?" ("+PL[prov()]+")":"");$("aiProv").value=S.get("nova.prov")||"auto";$("aiModel").value=S.get("nova.model")||"";$("aiBase").value=S.get("nova.base")||"";$("aiKey").value=""}
+async function send(){const i=$("msg"),raw=i.value.trim();if(!raw)return;const m=" "+raw.toLowerCase()+" ",lg=/[\u0900-\u097F]/.test(raw)?"hi":"en";
+ say(S.get("nova.user")||"You",raw,"me");i.value="";
+ if(S.get("nova.key")){const w=say("Nova",t("aiThink"));try{const out=await askAI(raw);w.remove();say("Nova",out);return}catch(e){w.remove();toast(t("aiErr")+" ("+e.message+")","var(--amber)")}}
+ const hit=KB.find(k=>k[0].some(w=>m.includes(w.startsWith("hi ")?" hi ":w)));
+ setTimeout(()=>{let r=hit?(typeof hit[1]==="function"?hit[1]():hit[1][lg]):T[lg].unk;say("Nova",r)},400)}
+
+/* ---- vitals simulation ---- */
+let bpm=75,ph="rest",pt=0;const data=Array(30).fill(75);
+function tick(){pt++;const R=Math.random;
+ if(ph==="rest"){bpm+=R()*2-1;if(pt>20){ph="warm";pt=0}}else if(ph==="warm"){bpm+=R()*3+1;if(bpm>110){ph="hard";pt=0}}
+ else if(ph==="hard"){bpm=Math.min(140,bpm+R()*8+2);if(pt>15){ph="down";pt=0}}else{bpm-=R()*5+2;if(bpm<85){ph="rest";pt=0}}
+ bpm=Math.max(60,bpm);const v=Math.round(bpm);$("vBpm").textContent=v;data.push(v);data.shift();if(bpmChart)bpmChart.update("none");
+ const lv=v>126?2:v>105?1:0,col=["var(--mint)","var(--amber)","var(--red)"][lv];
+ $("status").textContent=t(["stable","elev","crit"][lv]);$("status").style.color=col;$("stress").textContent=t(["sLow","sMod","sHigh"][lv]);
+ const sc=Math.max(40,Math.round(92-(v-70)*.5));$("sring").style.setProperty("--p",sc);$("sring").firstElementChild.textContent=sc;
+ if(lv===2&&!tick.a){toast(t("crit")+" "+v,"var(--red)");tick.a=1}if(v<100)tick.a=0}
+function charts(){if(!window.Chart)return;const css=getComputedStyle(document.documentElement);Chart.defaults.color=css.getPropertyValue("--mute").trim();Chart.defaults.font.family="Outfit,system-ui,sans-serif";
+ bpmChart=new Chart($("bpm"),{type:"line",data:{labels:data.map(()=>""),datasets:[{data,borderColor:css.getPropertyValue("--mint").trim(),backgroundColor:"rgba(61,220,176,.12)",fill:true,tension:.4,pointRadius:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:40,max:160,grid:{color:css.getPropertyValue("--line").trim()}},x:{display:false}}}})}
+function weekly(){if(weekChart||!window.Chart)return;const css=getComputedStyle(document.documentElement);weekChart=new Chart($("week"),{type:"bar",data:{labels:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],datasets:[{label:"Steps",data:[4200,5800,3900,7100,5200,8400,6100],backgroundColor:css.getPropertyValue("--blue").trim(),borderRadius:8},{label:"Score",data:[72,75,70,82,78,85,80],backgroundColor:css.getPropertyValue("--mint").trim(),borderRadius:8}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{grid:{color:css.getPropertyValue("--line").trim()}}}}})}
+
+/* ---- wiring ---- */
+function show(){const u=S.get("nova.user");$("login").classList.toggle("hidden",!!u);$("app").classList.toggle("hidden",!u);if(!u)return;
+ $("cycleCard").classList.toggle("hidden",S.get("nova.gender")!=="female");const on=S.get("nova.tasksOn")==="1";$("taskOn").checked=on;$("taskCard").classList.toggle("hidden",!on);
+ applyLang();aiState();if(!$("chat").children.length)say("Nova",L==="hi"?"नमस्ते! मैं आपके स्वास्थ्य और चक्र का विश्लेषण कर सकती हूँ।":"Hello! I can look at your vitals and your cycle.")}
+$("go").onclick=()=>{const n=$("name").value.trim();if(!n)return toast(t("full"),"var(--amber)");S.set("nova.user",n);S.set("nova.gender",$("gender").value);show()};
+$("saveCyc").onclick=()=>saveCycle();$("startToday").onclick=()=>saveCycle(iso(new Date()));
+$("bLang").onclick=()=>{L=L==="en"?"hi":"en";S.set("nova.lang",L);applyLang();aiState()};
+$("bTheme").onclick=()=>{const c=document.documentElement,n=(c.dataset.theme==="dark")?"light":"dark";c.dataset.theme=n;S.set("nova.theme",n);if(window.Chart){const css=getComputedStyle(c);Chart.defaults.color=css.getPropertyValue("--mute").trim();[bpmChart,weekChart].forEach(x=>x&&x.update())}};
+$("bSet").onclick=()=>$("sheet").classList.remove("hidden");$("closeSet").onclick=()=>$("sheet").classList.add("hidden");
+$("taskOn").onchange=e=>{S.set("nova.tasksOn",e.target.checked?"1":"0");$("taskCard").classList.toggle("hidden",!e.target.checked)};
+$("logout").onclick=()=>{S.clr();location.reload()};
+$("bHist").onclick=()=>{$("hist").classList.toggle("hidden");weekly();applyLang()};
+$("aiSave").onclick=()=>{const k=$("aiKey").value.trim();if(k)S.set("nova.key",k);S.set("nova.prov",$("aiProv").value);S.set("nova.model",$("aiModel").value.trim());S.set("nova.base",$("aiBase").value.trim());aiState();toast(t("aiSaved"))};
+$("scanBtn").onclick=()=>{if(!S.get("nova.key"))return toast(t("scanNoKey"),"var(--amber)");$("scanFile").click()};
+$("scanFile").onchange=async e=>{const f=e.target.files[0];e.target.value="";if(!f)return;let img;try{img=await shrink(f)}catch(x){return toast(t("imgErr"),"var(--amber)")}
+ const q=$("msg").value.trim()||t("scanDef");$("msg").value="";const pp=say(S.get("nova.user")||"You",q,"me"),im=document.createElement("img");im.src="data:"+img.mime+";base64,"+img.b64;im.alt="Report";im.style.cssText="display:block;max-width:140px;border-radius:10px;margin-top:6px";pp.appendChild(im);$("chat").scrollTop=1e9;
+ const w=say("Nova",t("aiThink"));try{const out=await askAI(q,img);w.remove();say("Nova",out)}catch(x){w.remove();toast(t("aiErr")+" ("+x.message+")","var(--amber)")}};
+$("aiRemove").onclick=()=>{S.set("nova.key","");H.length=0;aiState();toast(t("aiRemoved"))};
+$("sendB").onclick=send;$("msg").addEventListener("keydown",e=>{if(e.key==="Enter")send()});
+document.documentElement.dataset.theme=S.get("nova.theme")||"dark";
+charts();show();setInterval(tick,2000);
+</script>
+</body>
+</html>
