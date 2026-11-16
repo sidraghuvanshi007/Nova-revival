@@ -2,7 +2,7 @@
 
 A mobile-first health dashboard that runs entirely in the browser. It has a period cycle tracker, a wellness score, daily tasks and an optional AI assistant that can explain a photo of a health report.
 
-**Live demo:** https://YOUR-USERNAME.github.io/YOUR-REPO-NAME/
+
 
 <!-- Add 2 or 3 screenshots here -->
 
